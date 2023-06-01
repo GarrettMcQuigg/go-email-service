@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	// "server/internal/controllers/email"
+	"server/internal"
 )
 
 type Email struct {
@@ -26,7 +26,7 @@ const (
 func main() {
 	router := gin.Default()
 
-	err := email.sendEmail()
+	err := internal.SendEmail()
 	if err != nil {
 		fmt.Println("Failed to send email:", err)
         return
