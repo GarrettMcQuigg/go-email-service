@@ -8,21 +8,6 @@ import (
 	"server/internal"
 )
 
-type Email struct {
-	Recipient 		string `json:"recipient"`
-	Subject   		string `json:"subject"`
-	Body      		string `json:"message"`
-	TemplateRef     string `json:"tempalteRef"`
-}
-
-const (
-	senderEmail 	= "garrettmcquigg@gmail.com"
-	recipientEmail  = "garrettmcquigg@gmail.com"
-	senderPassword 	= "aatwtqcapsdfvveh"
-	smtpServer 		= "smtp.gmail.com"
-	smtpPort 		= 587
-)
-
 func main() {
 	router := gin.Default()
 

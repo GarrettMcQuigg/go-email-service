@@ -5,11 +5,11 @@ import (
 	"strconv"
 )
 
-type Email struct {
-	Recipient string `json:"recipient"`
-	Subject   string `json:"subject"`
-	Body      string `json:"message"`
-	TemplateRef      string `json:"tempalteRef"`
+type RequestBody struct {
+	Recipient 		string `json:"recipient"`
+	Subject   		string `json:"subject"`
+	Body      		string `json:"message"`
+	TemplateRef     string `json:"tempalteRef"`
 }
 
 const (
@@ -21,17 +21,20 @@ const (
 )
 
 func composeEmail() string {
-	recipient := "garrettmcquigg@gmail.com"
-	subject := "Test Email"
-	body := "This is the email body."
+	reqBody := RequestBody{
+		Recipient: recipientEmail,
+		Subject: "Email sent using Golang SMTP",
+		Body: "Test Email.",
+		TemplateRef: "temp1",
+	}
 
 	message := "From: " + senderEmail + "\n" +
-		"To: " + recipient + "\n" +
-		"Subject: " + subject + "\n" +
+		"To: " + recipientEmail + "\n" +
+		"Subject: " + reqBody.Subject + "\n" +
 		"MIME-Version: 1.0" + "\n" +
 		"Content-Type: text/plain; charset=\"UTF-8\"" + "\n" +
 		"\n" +
-		body
+		reqBody.Body
 
 	return message
 }
