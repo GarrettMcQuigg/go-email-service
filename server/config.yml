@@ -1,6 +1,0 @@
-# config.yml
-
-server:
-  senderEmail: garrettmcquigg@gmail.com
-  senderPassword: aatwtqcapsdfvveh
-  smtpServer: smtp.gmail.com
