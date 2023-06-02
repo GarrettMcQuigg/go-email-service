@@ -1,5 +1,7 @@
 # example.config.yml
 
 server:
-  host: localhost
-  port: 3000
+  senderEmail: example@any.com
+  senderPassword: password
+  smtpPort: 123
+  smtpServer: smtp.server.com
