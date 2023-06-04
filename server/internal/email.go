@@ -9,10 +9,9 @@ import (
 )
 
 type RequestBody struct {
-	Recipient   string `json:"recipient"`
-	Subject     string `json:"subject"`
-	Body        string `json:"message"`
-	TemplateRef string `json:"tempalteRef"`
+	Recipient   string `json:"recipient" binding:"required"`
+	Subject     string `json:"subject" binding:"required"`
+	Body        string `json:"message" binding:"required"`
 }
 
 const (
@@ -29,6 +28,7 @@ func ComposeEmail(ctx *gin.Context) {
 	var requestBody RequestBody
 	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	emailResponse := RequestBody{
