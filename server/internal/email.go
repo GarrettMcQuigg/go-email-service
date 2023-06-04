@@ -18,6 +18,7 @@ type RequestBody struct {
 const (
 	smtpPort = 587
 )
+
 var config Configuration
 
 func composeEmail(ctx *gin.Context) (string, string) {
@@ -31,15 +32,17 @@ func composeEmail(ctx *gin.Context) (string, string) {
 		panic(err)
 	}
 
+	recipient := requestBody.Recipient
+
 	message := "From: " + config.SenderEmail + "\n" +
-		"To: " + requestBody.Recipient + "\n" +
+		"To: " + recipient + "\n" +
 		"Subject: " + requestBody.Subject + "\n" +
 		"MIME-Version: 1.0" + "\n" +
 		"Content-Type: text/plain; charset=\"UTF-8\"" + "\n" +
 		"\n" +
 		requestBody.Body
 
-	return message, requestBody.Recipient
+	return message, recipient
 }
 
 func SendEmail(message, recipient string) {
