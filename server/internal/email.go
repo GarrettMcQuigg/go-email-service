@@ -1,11 +1,11 @@
 package internal
 
 import (
-	"fmt"
+	"net/http"
 	"net/smtp"
 	"strconv"
 
-	"github.com/spf13/viper"
+	"github.com/gin-gonic/gin"
 )
 
 type RequestBody struct {
@@ -18,56 +18,35 @@ type RequestBody struct {
 const (
 	smtpPort = 587
 )
+var config Configuration
 
-func composeEmail() (string, string) {
-	v := viper.New()
-	v.SetConfigFile("C:/Users/gmati/OneDrive/Desktop/go-email-service/server/config.yml")
-
-	if err := v.ReadInConfig(); err != nil {
-		fmt.Println("Error:", err)
+func composeEmail(ctx *gin.Context) (string, string) {
+	// con, exists := ctx.Get("config")
+	// if !exists {
+	// 	ctx.JSON(400, "error, bad request")
+	// }
+	var requestBody RequestBody
+	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		panic(err)
 	}
 
-	senderEmail := v.GetString("server.senderEmail")
-
-	reqBody := RequestBody{
-		Recipient:   "garrettmcquigg@gmail.com",
-		Subject:     "Email sent using Golang SMTP",
-		Body:        "Test Email.",
-		TemplateRef: "temp1",
-	}
-
-	recipient := reqBody.Recipient
-
-	message := "From: " + senderEmail + "\n" +
-		"To: " + recipient + "\n" +
-		"Subject: " + reqBody.Subject + "\n" +
+	message := "From: " + config.SenderEmail + "\n" +
+		"To: " + requestBody.Recipient + "\n" +
+		"Subject: " + requestBody.Subject + "\n" +
 		"MIME-Version: 1.0" + "\n" +
 		"Content-Type: text/plain; charset=\"UTF-8\"" + "\n" +
 		"\n" +
-		reqBody.Body
+		requestBody.Body
 
-	return message, recipient
+	return message, requestBody.Recipient
 }
 
-func SendEmail(senderEmail string, recipient string) error {
-	v := viper.New()
-	v.SetConfigFile("C:/Users/gmati/OneDrive/Desktop/go-email-service/server/config.yml")
+func SendEmail(message, recipient string) {
+	auth := smtp.PlainAuth("", config.SenderEmail, config.SenderPassword, config.SmtpServer)
 
-	if err := v.ReadInConfig(); err != nil {
-		fmt.Println("Error:", err)
-	}
-
-	senderPassword := v.GetString("server.senderPassword")
-	smtpServer := v.GetString("server.smtpServer")
-
-	auth := smtp.PlainAuth("", senderEmail, senderPassword, smtpServer)
-
-	message, recipient := composeEmail()
-
-	err := smtp.SendMail(smtpServer+":"+strconv.Itoa(smtpPort), auth, senderEmail, []string{recipient}, []byte(message))
+	err := smtp.SendMail(config.SmtpServer+":"+strconv.Itoa(smtpPort), auth, config.SenderEmail, []string{recipient}, []byte(message))
 	if err != nil {
-		return err
+		return
 	}
-
-	return nil
 }

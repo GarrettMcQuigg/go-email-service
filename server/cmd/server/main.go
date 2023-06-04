@@ -1,33 +1,45 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 
 	"server/internal"
-
-	"github.com/spf13/viper"
 )
 
 func main() {
 	router := gin.Default()
 
-	v := viper.New()
-	v.SetConfigFile("C:/Users/gmati/OneDrive/Desktop/go-email-service/server/config.yml")
-
-	if err := v.ReadInConfig(); err != nil {
-		fmt.Println("Error:", err)
+	config := internal.Configuration{
+		SenderEmail: "",
+		SenderPassword: "",
+		SmtpServer: "",
 	}
 
-	senderEmail := v.GetString("server.senderEmail")
-	recipient := "garrettmcquigg@gmail.com"
+	viperRef := viper.New()
+	viperRef.SetConfigName("config")
+	viperRef.SetConfigType("yml")
+	viperRef.AddConfigPath(".")
+	viperRef.AddConfigPath("../../")
 
-	err := internal.SendEmail(senderEmail, recipient)
-	if err != nil {
-		fmt.Println("Failed to send email:", err)
-        return
+	viperRef.AutomaticEnv()
+
+	if err := viperRef.ReadInConfig(); err != nil {
+		panic(err)
 	}
 
-	router.Run(":8080")
+	if err := viperRef.Unmarshal(&config); err != nil {
+		panic(err)
+	}
+
+	router.Use(func(c *gin.Context) {
+		c.Set("config", config)
+		c.Next()
+	})
+
+	router.POST("/send-email", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"message": "successfully sent email"})
+	})
+	
+	router.Run()
 }
