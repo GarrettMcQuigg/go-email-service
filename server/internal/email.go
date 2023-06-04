@@ -21,7 +21,7 @@ const (
 
 var config Configuration
 
-func composeEmail(ctx *gin.Context) (string, string) {
+func ComposeEmail(ctx *gin.Context) {
 	// con, exists := ctx.Get("config")
 	// if !exists {
 	// 	ctx.JSON(400, "error, bad request")
@@ -29,27 +29,28 @@ func composeEmail(ctx *gin.Context) (string, string) {
 	var requestBody RequestBody
 	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		panic(err)
 	}
 
-	recipient := requestBody.Recipient
+	emailResponse := RequestBody{
+		Recipient: requestBody.Recipient,
+		Subject:   requestBody.Subject,
+		Body:      requestBody.Body,
+	}
 
 	message := "From: " + config.SenderEmail + "\n" +
-		"To: " + recipient + "\n" +
+		"To: " + requestBody.Recipient + "\n" +
 		"Subject: " + requestBody.Subject + "\n" +
 		"MIME-Version: 1.0" + "\n" +
 		"Content-Type: text/plain; charset=\"UTF-8\"" + "\n" +
 		"\n" +
 		requestBody.Body
 
-	return message, recipient
-}
-
-func SendEmail(message, recipient string) {
 	auth := smtp.PlainAuth("", config.SenderEmail, config.SenderPassword, config.SmtpServer)
 
-	err := smtp.SendMail(config.SmtpServer+":"+strconv.Itoa(smtpPort), auth, config.SenderEmail, []string{recipient}, []byte(message))
+	err := smtp.SendMail(config.SmtpServer+":"+strconv.Itoa(smtpPort), auth, config.SenderEmail, []string{requestBody.Recipient}, []byte(message))
 	if err != nil {
 		return
 	}
+
+	ctx.JSON(http.StatusOK, gin.H{"email": emailResponse, "success": "success"})
 }
