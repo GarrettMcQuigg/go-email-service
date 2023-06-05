@@ -18,13 +18,7 @@ cp example.config.yml config.yml
 
 3. Ensure you have an app password configured for your gmail account.
 
-4. Download dependencies required to run the server.
-
-```bash
-go mod download
-```
-
-5. Run the server
+4. Run the server
 
 ```bash
 go run cmd/server/main.go
