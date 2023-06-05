@@ -4,17 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 
-	"server/internal"
+	internal "server/internal"
 )
 
 func main() {
 	router := gin.Default()
-
-	config := internal.Configuration{
-		SenderEmail: "",
-		SenderPassword: "",
-		SmtpServer: "",
-	}
+	
+	var config internal.Configuration
 
 	viperRef := viper.New()
 	viperRef.SetConfigName("config")
@@ -37,9 +33,7 @@ func main() {
 		c.Next()
 	})
 
-	router.POST("/send-email", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{"message": "successfully sent email"})
-	})
+	router.POST("/send-email", internal.ComposeEmail)
 	
 	router.Run()
 }

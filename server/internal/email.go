@@ -11,30 +11,30 @@ import (
 type RequestBody struct {
 	Recipient   string `json:"recipient" binding:"required"`
 	Subject     string `json:"subject" binding:"required"`
-	Body        string `json:"message" binding:"required"`
+	Body        string `json:"body" binding:"required"`
 }
 
 const (
 	smtpPort = 587
 )
 
-var config Configuration
-
 func ComposeEmail(ctx *gin.Context) {
-	// con, exists := ctx.Get("config")
-	// if !exists {
-	// 	ctx.JSON(400, "error, bad request")
-	// }
 	var requestBody RequestBody
 	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	emailResponse := RequestBody{
-		Recipient: requestBody.Recipient,
-		Subject:   requestBody.Subject,
-		Body:      requestBody.Body,
+	conf, exists := ctx.Get("config")
+	if !exists {
+		ctx.JSON(400, "error, bad request")
+		return
+	}
+
+	config, ok := conf.(Configuration)
+	if !ok {
+		ctx.JSON(400, "error, bad request")
+		return
 	}
 
 	message := "From: " + config.SenderEmail + "\n" +
@@ -52,5 +52,5 @@ func ComposeEmail(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"email": emailResponse, "success": "success"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "email sent successfully"})
 }
