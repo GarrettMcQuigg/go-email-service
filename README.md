@@ -16,7 +16,7 @@ cd server
 cp example.config.yml config.yml
 ```
 
-<ins>    3. Ensure you have an app password configured for your gmail account.</ins>
+3.<ins> Ensure you have an app password configured for your gmail account.</ins>
 
 4. Run the server
 
