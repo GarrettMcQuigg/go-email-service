@@ -1,7 +1,3 @@
-# example.config.yml
-
-server:
-  senderEmail: example@any.com
-  senderPassword: password
-  smtpPort: 123
-  smtpServer: smtp.server.com
+senderEmail: example@any.com
+senderPassword: app password
+smtpServer: smtp.server.com

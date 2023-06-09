@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 
-	internal "server/internal"
+	"server/internal"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 
 	viperRef := viper.New()
 	viperRef.SetConfigName("config")
-	viperRef.SetConfigType("yml")
+	viperRef.SetConfigType("yaml")
 	viperRef.AddConfigPath(".")
 	viperRef.AddConfigPath("../../")
 
